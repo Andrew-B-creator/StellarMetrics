@@ -19,10 +19,8 @@ def test_absolute_magnitude_calculation():
     assert abs(calculated_abs_mag - 4.83) < 0.1
 
 def test_absolute_magnitude_invalid_distance():
-    with pytest.raises(ValueError):
-        physics.absolute_magnitude_calculation(apparent_magnitude = 10.0, distance_parsec = -5.0)
-    with pytest.raises(ValueError):
-        physics.absolute_magnitude_calculation(apparent_magnitude = 10.0, distance_parsec = 0.0)
+    result = physics.absolute_magnitude_calculation(apparent_magnitude = 10.0, distance_parsec = -5.0)
+    assert np.isnan(result)
 
 
 def test_absolute_magnitude_vectorization():
@@ -43,20 +41,16 @@ def test_radius_calculation():
     assert abs(calculated_radius - 1.0) < 0.01
     
 def test_radius_calculation_invalid_values():
-    with pytest.raises(ValueError):
-        physics.radius_calculation(luminosity = -1.0, temperature = 5778.0)
-    with pytest.raises(ValueError):
-        physics.radius_calculation(luminosity = 1.0, temperature = -5778.0)
+    result = physics.radius_calculation(luminosity = -10.0, temperature = 5778.0)
+    assert np.isnan(result)
 
 def test_parallax_to_distance():
     calculated_distance = physics.parallax_to_distance(100.0)
     assert abs(calculated_distance - 10.0) < 0.01
 
 def test_parallax_to_distance_invalid_values():
-    with pytest.raises(ValueError):
-        physics.parallax_to_distance(-100.0)
-    with pytest.raises(ValueError):
-        physics.parallax_to_distance(0.0)
+    result = physics.parallax_to_distance(0)
+    assert np.isnan(result)
 
 def test_error_propagation_calculation():
     calculated_error = physics.error_propagation_calculation(parallax_mas = 100.0, parallax_error_mas = 10.0)

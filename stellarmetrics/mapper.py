@@ -9,20 +9,19 @@ HYG_convertor = {"id":"star_id",
 "ci":"color_index"
 }
 
-GAIA_convertor = {"source_id":"star_id",
-"ra":"ra",
-"dec": "dec",
+GAIA_convertor = {
+"source_id":"star_id",
 "parallax":"parallax_mas",
 "parallax_error":"parallax_error_mas",
 "phot_g_mean_mag":"apparent_magnitude",
 "bp_rp":"color_index"
 }
 
-KEPLER_convertor = {"kepid": "star_id",
-"ra":"ra",
-"dec":"dec",
+KEPLER_convertor = {
+"kepid": "star_id",
 "teff": "temperature",
-"radius":"radius"
+"radius":"radius",
+"kepmag": "apparent_magnitude"
 }
 
 

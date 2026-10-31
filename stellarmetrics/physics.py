@@ -38,7 +38,8 @@ def luminosity_calculation(absolute_magnitude):
 
 def radius_calculation(luminosity, temperature):
     """Calculates the radius of a star in solar radii based on its luminosity and temperature"""
-    radius = np.sqrt(luminosity) * (5778.0/temperature)**2
+    with np.errstate(invalid='ignore'):
+        radius = np.sqrt(luminosity) * (5778.0/temperature)**2
     return radius
 
 def error_propagation_calculation(parallax_mas, parallax_error_mas):
@@ -56,10 +57,26 @@ def magnitude_error_calculation(apparent_magnitude_noise, parallax_noise, parall
 def stellar_physics_processor(df):
     """Processes a dataframe containing stellar data and calculates derived physical properties using the above functions"""
     df = df.copy()
-    df["temperature"] = ballesteros_temperature_calculation(df["color_index"])
-    df["absolute_magnitude"] = absolute_magnitude_calculation(df.get("apparent_magnitude"), distance_parsec = df.get("distance_parsec"), parallax_mas = df.get("parallax_mas"))
-    df["luminosity"] = luminosity_calculation(df["absolute_magnitude"])
-    df["radius"] = radius_calculation(df["luminosity"], df["temperature"])
-    df["distance_uncertainty"] = error_propagation_calculation(df["parallax_mas"], df["parallax_error_mas"])
-    df["magnitude_error"] = magnitude_error_calculation(df["apparent_magnitude_noise"], df["parallax_noise"], df["parallax_mas"])
+    if "temperature" not in df.columns:
+        if "teff" in df.columns:
+            df["temperature"] = df["teff"]
+        elif "color_index" in df.columns:
+            df["temperature"] = ballesteros_temperature_calculation(df["color_index"])
+    
+    if "parallax_mas" not in df.columns and "distance_parsec" in df.columns:
+        df["parallax_mas"] = 1000.0 / df["distance_parsec"]
+
+    if "apparent_magnitude" in df.columns and ("parallax_mas" in df.columns or "distance_parsec" in df.columns):
+        df["absolute_magnitude"] = absolute_magnitude_calculation(df.get("apparent_magnitude"), distance_parsec = df.get("distance_parsec"), parallax_mas = df.get("parallax_mas"))
+        df["luminosity"] = luminosity_calculation(df["absolute_magnitude"])
+        if "radius" not in df.columns and "temperature" in df.columns:
+            df["radius"] = radius_calculation(df["luminosity"], df["temperature"])
+    if "luminosity" not in df.columns and "radius" in df.columns and "temperature" in df.columns:
+        df["luminosity"] = (df["radius"]**2) * ((df["temperature"]/5778.0)**4)
+    
+    if "parallax_mas" in df.columns and "parallax_error_mas" in df.columns:
+        df["distance_uncertainty"] = error_propagation_calculation(df["parallax_mas"], df["parallax_error_mas"])
+    
+    if "apparent_magnitude_noise" in df.columns and "parallax_noise" in df.columns and "parallax_mas" in df.columns:
+        df["magnitude_error"] = magnitude_error_calculation(df["apparent_magnitude_noise"], df["parallax_noise"], df["parallax_mas"])
     return df

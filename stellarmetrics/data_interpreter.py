@@ -14,11 +14,12 @@ def retrieve_data(user_choice, compression = None):
 
 
 def clean_data(universal_data):
-    if "color_index" not in universal_data.columns:
-        print("Error: 'color index' column not found in data.")
-        return None
     try:
-        dt = universal_data.dropna(subset=["color_index", "apparent_magnitude"]).drop_duplicates()
+        target_columns = [col for col in ["color_index", "apparent_magnitude", "temperature"] if col in universal_data.columns]
+        dt = universal_data.dropna(subset=target_columns).drop_duplicates()
+        for col in ["color_index", "ci"]:
+            if col in dt.columns:
+                dt = dt[dt[col] > 0]
         return dt
 
     except Exception as e:
