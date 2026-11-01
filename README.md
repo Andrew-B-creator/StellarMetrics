@@ -15,7 +15,7 @@ Stellarmetrics is a pipeline built in Python made in order to take in astronomic
 # Project Structure
 Stellarmetrics/
     data/            #Telescope datasets (Gaia, Kepler, and HYG)
-    stellarmetrics/
+    stellarmetrics/  #Main file for all project functions and some documentation (notes and logs written during the coding process)
         main.py      # Main function pipeline. All created functions and coding passes through here to make the project run smoothly. User inputs are also collected in here.
         data_setup.py.  #Grabs a sample set of data from telescope data (Kepler, Gaia, and HYG respetively), saving them to their own respective data files used to perform calculations (using the entire data set via a url would be subject to a plethora of bugs and could easily break; this method makes the project simpler and more efficient).
         mapper.py.    #Changes the headers of all telescope data from the headers provided by their respective telescopes to a universal header. This way, calculations are seamless across each source of data.
